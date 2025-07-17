@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -11,9 +11,17 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import MessageSnackbar from '../components/MessageSnackbar';
 
 const Login = () => {
   const navigate = useNavigate();
+    const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
+
+  const handleClose = ()=>{
+    setMessage('');
+    if(messageType==='success')navigate('/');
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -28,16 +36,25 @@ const Login = () => {
       try {
         const res = await axios.post('/users/login', values);
         localStorage.setItem('token', res.data.token);
-        alert('Login successful!');
-        navigate('/');
+        setMessage('Login successful!');
+        setMessageType('success');
       } catch (err) {
-        alert(err.response?.data?.error || 'Login failed');
+        setMessage(err.response?.data?.error || 'Login failed! Please try again');
+        setMessageType('error');
       }
     },
   });
 
   return (
     <Container maxWidth="sm">
+      {message && (
+        <MessageSnackbar
+          message={message}
+          messageType={messageType}
+          handleClose={handleClose}
+        />
+      )}
+
       <Paper
         elevation={3}
         sx={{

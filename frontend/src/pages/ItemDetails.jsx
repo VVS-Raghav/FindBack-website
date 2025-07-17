@@ -17,6 +17,7 @@ import { useFormik } from 'formik';
 import axios from '../api/axios';
 import Loader from '../components/Loader';
 import * as Yup from 'yup';
+import MessageSnackbar from '../components/MessageSnackbar';
 
 const ItemDetails = () => {
   const { id } = useParams();
@@ -26,6 +27,8 @@ const ItemDetails = () => {
   const [loading, setLoading] = useState(true);
   const [openProofDialog, setOpenProofDialog] = useState(false);
   const [proofImage, setProofImage] = useState(null);
+   const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('success');
 
   const fetchItem = async () => {
     try {
@@ -74,11 +77,13 @@ const ItemDetails = () => {
       const formData = new FormData();
       formData.append('proofImage', claimFormik.values.proofImage);
       await axios.post(`/claims/${claimId}/initiate`, formData);
-      alert('Claim initiated successfully');
       claimFormik.setFieldValue('proofImage', null);
+      setMessage('Claim initiated successfully!');
+        setMessageType('success');
       await fetchClaims();
     } catch {
-      alert('Failed to initiate claim');
+      setMessage('Failed to initiate claim');
+        setMessageType('error');
     }
   };
 
@@ -109,13 +114,21 @@ const ItemDetails = () => {
         resetForm();
         await fetchClaims();
       } catch {
-        alert('Claim failed');
+        setMessage('Claim failed');
+        setMessageType('error');
       }
     },
   });
 
   return (
     <Container maxWidth="md">
+      {message && (
+        <MessageSnackbar
+          message={message}
+          messageType={messageType}
+          handleClose={()=>setMessage('')}
+        />
+      )}
       {loading || !item ? (
         <Loader />
       ) : (
@@ -208,6 +221,7 @@ const ItemDetails = () => {
                       <input
                         type="file"
                         hidden
+                        accept="image/*"
                         onChange={(e) => claimFormik.setFieldValue('proofImage', e.target.files[0])}
                       />
                     </Button>
@@ -364,7 +378,7 @@ const ItemDetails = () => {
                     </Typography>
                   )}
 
-                  {userClaim.lostClaimProofImage ? (
+                  {userClaim.initiatedByLostPerson ? (
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
                       <Button
                         variant="outlined"

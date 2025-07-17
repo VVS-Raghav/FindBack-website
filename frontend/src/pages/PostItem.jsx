@@ -13,10 +13,18 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import MessageSnackbar from '../components/MessageSnackbar';
 
 const PostItem = () => {
   const navigate = useNavigate();
   const [selectedImageName, setSelectedImageName] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
+
+  const handleClose = () => {
+    setMessage('');
+    if (messageType === 'success') navigate('/');
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -41,16 +49,24 @@ const PostItem = () => {
 
       try {
         await axios.post('/items', formData);
-        alert('Item posted successfully!');
-        navigate('/');
+        setMessage('Item posted successfully!');
+        setMessageType('success');
       } catch (err) {
-        alert(err.response?.data?.error || 'Failed to post item');
+        setMessage(err.response?.data?.error || 'Failed to post item');
+        setMessageType('error');
       }
     },
   });
 
   return (
     <Container maxWidth="sm">
+      {message && (
+        <MessageSnackbar
+          message={message}
+          messageType={messageType}
+          handleClose={handleClose}
+        />
+      )}
       <Paper elevation={3} sx={{ p: 4, mt: 6, borderRadius: 3 }}>
         <Typography variant="h4" fontWeight={600} gutterBottom textAlign="center">
           Post Lost / Found Item
