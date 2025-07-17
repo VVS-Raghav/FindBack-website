@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Box,Typography,Container,Divider,Chip,Paper,Button,Dialog,DialogTitle,DialogContent,DialogActions} from '@mui/material';
+import { Box, Typography, Container, Divider, Chip, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import axios from '../api/axios';
@@ -15,8 +15,10 @@ const ItemDetails = () => {
   const [loading, setLoading] = useState(true);
   const [openProofDialog, setOpenProofDialog] = useState(false);
   const [proofImage, setProofImage] = useState(null);
-   const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('success');
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 
   const fetchItem = async () => {
     try {
@@ -67,11 +69,11 @@ const ItemDetails = () => {
       await axios.post(`/claims/${claimId}/initiate`, formData);
       claimFormik.setFieldValue('proofImage', null);
       setMessage('Claim initiated successfully!');
-        setMessageType('success');
+      setMessageType('success');
       await fetchClaims();
     } catch {
       setMessage('Failed to initiate claim');
-        setMessageType('error');
+      setMessageType('error');
     }
   };
 
@@ -114,7 +116,7 @@ const ItemDetails = () => {
         <MessageSnackbar
           message={message}
           messageType={messageType}
-          handleClose={()=>setMessage('')}
+          handleClose={() => setMessage('')}
         />
       )}
       {loading || !item ? (
@@ -127,7 +129,7 @@ const ItemDetails = () => {
 
           {item.image && (
             <img
-              src={`http://localhost:5000/uploads/${item.image}`}
+              src={`${BASE_URL}/../uploads/${item.image}`}
               alt={item.title}
               style={{
                 width: '100%',
@@ -488,7 +490,7 @@ const ItemDetails = () => {
             <DialogContent>
               {proofImage ? (
                 <img
-                  src={`http://localhost:5000/uploads/${proofImage}`}
+                  src={`${BASE_URL}/../uploads/${item.image}`}
                   alt="Proof"
                   style={{ width: '100%', borderRadius: '8px' }}
                 />

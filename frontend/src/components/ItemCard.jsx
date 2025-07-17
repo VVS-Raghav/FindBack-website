@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ItemCard = ({ item }) => {
   const navigate = useNavigate();
+  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
   return (
     <Card
@@ -24,7 +25,7 @@ const ItemCard = ({ item }) => {
         <CardMedia
           component="img"
           height="160"
-          image={`http://localhost:5000/uploads/${item.image}`}
+          image={`${BASE_URL}/../uploads/${item.image}`}
           alt={item.title}
           sx={{ objectFit: 'cover' }}
         />
