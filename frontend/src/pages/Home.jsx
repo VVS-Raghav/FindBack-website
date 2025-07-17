@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
 import ItemCard from '../components/ItemCard';
 import Loader from '../components/Loader';
-import {
-  Box,
-  Typography,
-  ToggleButton,
-  ToggleButtonGroup,
-  Grid,
-  Divider
-} from '@mui/material';
+import {Box,Typography,ToggleButton,ToggleButtonGroup} from '@mui/material';
 
 const Home = () => {
   const [items, setItems] = useState([]);
