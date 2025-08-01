@@ -7,34 +7,35 @@ A full-stack web application that enables students to post, view, and claim lost
 ## 🚀 Features
 
 - 🔐 Student registration & login with JWT authentication  
-- 📤 Post lost or found items (with images)  
+- 📤 Post lost or found items (with images, Cloudinary integrated)  
 - 🔎 View all items and filter by type (lost / found)  
 - 🧾 Claim items with optional proof (receipt/photo)  
 - ⚖️ Auto-approve logic:  
   - If only 1 claim in 30 days → auto-approved  
-  - If proof is provided → manual approve  
+  - If proof is provided → manual approval required  
 - ☎️ Poster phone is shown only to approved claimant  
 - 🛡️ Fully protected API routes with middleware  
-- 📁 File upload support (Multer)
+- 📁 File upload support (Multer + Cloudinary)
 
 ---
 
 ## 🧰 Tech Stack
 
-| Frontend              | Backend                | Database |
-|----------------------|------------------------|----------|
-| React (CRA)          | Node.js + Express.js   | MongoDB  |
-| React Router         | JWT for auth           | Mongoose |
-| Material UI (MUI)    | Multer for file upload |          |
-| Formik + Yup         |                        |          |
+| Frontend              | Backend                | Database | Image Storage |
+|-----------------------|------------------------|----------|---------------|
+| React (CRA)           | Node.js + Express.js   | MongoDB  | Cloudinary    |
+| React Router          | JWT for auth           | Mongoose | Multer        |
+| Material UI (MUI)     | Multer for file upload |          |               |
+| Formik + Yup          |                        |          |               |
 
 ---
 
 ## 📂 Project Structure
 
-```
+``` 
 .
 ├── backend/
+│   ├── config/
 │   ├── controllers/
 │   ├── models/
 │   ├── routes/
@@ -57,13 +58,14 @@ A full-stack web application that enables students to post, view, and claim lost
 - Node.js & npm
 - MongoDB
 - Git
+- Cloudinary account & credentials
 
 ### 🔧 Backend Setup
 
 ```bash
 cd backend
 npm install
-cp .env.example .env  # Add your MONGO_URI and JWT_SECRET
+cp .env.example .env  # Add your MONGO_URI, JWT_SECRET, Cloudinary credentials
 npm run dev
 ```
 
@@ -75,25 +77,38 @@ npm install
 npm start
 ```
 
+Make sure your frontend `.env` has:
+
+```env
+REACT_APP_API_BASE_URL=http://localhost:5000/api
+```
+
+---
+
+## ☁️ Cloudinary Integration Notes
+
+- Images are uploaded to Cloudinary via backend Multer middleware configured with Cloudinary storage adapter.  
+- URLs from Cloudinary are stored in MongoDB and served from Cloudinary CDN.  
+- Keep Cloudinary credentials secure in `.env`.
+
 ---
 
 ## 🔐 Auto-Approval Logic (Claim System)
 
-| Condition                                 |    Approved     |
-|-------------------------------------------|-----------------|
-| Proof provided (receipt/image)            | ✅ Yes         |
-| Only 1 claim made within 30 days          | ✅ Yes         |
-| No proof + multiple claims                | ❌ No          |
+| Condition                        | Approved  |
+|---------------------------------|-----------|
+| Proof provided (receipt/image)  | ✅ Yes    |
+| Only 1 claim made within 30 days | ✅ Yes    |
+| No proof + multiple claims       | ❌ No     |
 
 If claim is approved:  
-- The claimant gets access to the poster’s phone number.
-
+- Claimant gets access to poster’s phone number.
 
 ---
 
 ## 🙋‍♂️ Author
 
-> **Venkata Sai Raghavendra Velicheti**  
+> **Venkata Sai Raghavendra Velicheti**
 
 ---
 
