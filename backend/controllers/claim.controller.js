@@ -1,18 +1,29 @@
 import dayjs from 'dayjs';
 import Claim from '../models/claim.model.js';
 import Item from '../models/item.model.js';
+import cloudinary from '../config/cloudinary.js';
+import fs from 'fs';
+
 
 // Make a new claim for a lost or found item
 export const makeClaim = async (req, res) => {
   try {
     const { itemId } = req.body;
-    const proofImage = req.file?.filename;
     const claimedBy = req.userId;
+
+    let proofImageUrl = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'claims',
+      });
+      fs.unlinkSync(req.file.path);
+      proofImageUrl = result.secure_url;
+    }
 
     const claim = await Claim.create({
       item: itemId,
       claimedBy,
-      proofImage,
+      proofImage: proofImageUrl,
     });
 
     res.status(201).json(claim);
@@ -93,21 +104,27 @@ export const getClaimsByItem = async (req, res) => {
 export const initiateClaimByLostUser = async (req, res) => {
   try {
     const { claimId } = req.params;
-    const proofImage = req.file?.filename;
     const userId = req.userId;
 
     const claim = await Claim.findById(claimId).populate('item');
 
     if (!claim) return res.status(404).json({ error: 'Claim not found' });
 
-    // Check permission
     if (claim.item.postedBy.toString() !== userId) {
       return res.status(403).json({ error: 'Only lost item poster can initiate claim' });
     }
 
-    // Mark initiated by lost person
+    let proofUrl = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'claims/proofs',
+      });
+      fs.unlinkSync(req.file.path);
+      proofUrl = result.secure_url;
+    }
+
     claim.initiatedByLostPerson = true;
-    claim.lostClaimProofImage = proofImage;
+    claim.lostClaimProofImage = proofUrl;
     await claim.save();
 
     res.json({ message: 'Claim initiated by lost user with proof', claim });

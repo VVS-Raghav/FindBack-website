@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ItemCard = ({ item }) => {
   const navigate = useNavigate();
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-
+  const statusLabel = item.isClaimed ? 'Claimed' : 'Unclaimed';
+  const statusColor = item.isClaimed ? 'success' : 'warning';
   return (
     <Card
       sx={{
@@ -24,10 +24,10 @@ const ItemCard = ({ item }) => {
       {item.image && (
         <CardMedia
           component="img"
-          height="160"
-          image={`${BASE_URL}/../uploads/${item.image}`}
+          height="180"
+          image={item.image}
           alt={item.title}
-          sx={{ objectFit: 'cover' }}
+          sx={{ objectFit: 'contain' }}
         />
       )}
 
@@ -39,10 +39,16 @@ const ItemCard = ({ item }) => {
           {item.description}
         </Typography>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          📍 <strong>{item.location}</strong>
+          Location: <strong>{item.location}</strong>
         </Typography>
         <Typography variant="body2">
           Type: <Chip label={item.type.toUpperCase()} size="small" color="primary" />
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 1, color: 'primary' }}>
+          Posted on: {new Date(item.date).toLocaleDateString()}
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 1, color: 'primary' }}>
+          Status: <Chip label={statusLabel} size="small" color={statusColor} />
         </Typography>
       </CardContent>
 

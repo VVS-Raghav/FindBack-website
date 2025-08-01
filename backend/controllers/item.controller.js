@@ -1,19 +1,39 @@
 import Item from '../models/item.model.js';
+import cloudinary from '../config/cloudinary.js';
+import fs from 'fs';
 
-// Create a new item (lost or found)
 export const postItem = async (req, res) => {
   try {
     const { title, description, location, type } = req.body;
-    const image = req.file?.filename;
-    const postedBy = req.userId;
+    const postedBy = req.userId || "688c7317dfe537a3af77c013";
 
-    const item = await Item.create({ title, description, location, type, image, postedBy });
+    let imageUrl = '';
+
+    if (req.file?.path) {
+      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'lost-found-items',
+      });
+
+      imageUrl = uploadResult.secure_url;
+      fs.unlinkSync(req.file.path);
+    }
+
+    const item = await Item.create({
+      title,
+      description,
+      location,
+      type,
+      image: imageUrl,
+      postedBy,
+    });
+
     res.status(201).json(item);
   } catch (err) {
     console.error('Error posting item:', err);
     res.status(500).json({ error: 'Failed to post item' });
   }
 };
+
 
 // Get all items (optionally filter by type: lost/found)
 export const getAllItems = async (req, res) => {

@@ -129,12 +129,12 @@ const ItemDetails = () => {
 
           {item.image && (
             <img
-              src={`${BASE_URL}/../uploads/${item.image}`}
+              src={item.image}
               alt={item.title}
               style={{
                 width: '100%',
                 maxHeight: '400px',
-                objectFit: 'cover',
+                objectFit: 'contain',
                 borderRadius: 12,
                 marginBottom: '1.5rem',
               }}
@@ -490,7 +490,7 @@ const ItemDetails = () => {
             <DialogContent>
               {proofImage ? (
                 <img
-                  src={`${BASE_URL}/../uploads/${item.image}`}
+                  src={item.image}
                   alt="Proof"
                   style={{ width: '100%', borderRadius: '8px' }}
                 />
